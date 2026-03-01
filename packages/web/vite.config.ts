@@ -65,6 +65,19 @@ async function handleDaemonCommand(
       return { agents };
     }
 
+    case 'repo_init': {
+      const githubUrl = args?.github_url as string;
+      if (!githubUrl) throw new Error('Missing github_url');
+      const cliArgs = ['repo', 'init', githubUrl];
+      const repoName = args?.name as string | undefined;
+      if (repoName) cliArgs.push(repoName);
+      if (args?.no_merge_queue) cliArgs.push('--no-merge-queue');
+      const mqTrack = args?.mq_track as string | undefined;
+      if (mqTrack) cliArgs.push(`--mq-track=${mqTrack}`);
+      await runMulticlaudeCommand(cliArgs);
+      return { success: true };
+    }
+
     case 'stop': {
       await runMulticlaudeCommand(['stop-all']);
       return { success: true };

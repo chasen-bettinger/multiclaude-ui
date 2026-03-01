@@ -91,6 +91,12 @@ export function useDaemon() {
     [sendCommand]
   );
 
+  const initRepo = useCallback(
+    (githubUrl: string, name?: string, noMergeQueue?: boolean, mqTrack?: string) =>
+      sendCommand('repo_init', { github_url: githubUrl, name, no_merge_queue: noMergeQueue, mq_track: mqTrack }),
+    [sendCommand]
+  );
+
   return {
     sendCommand,
     killAgent,
@@ -98,6 +104,7 @@ export function useDaemon() {
     stopRepo,
     triggerCleanup,
     spawnWorker,
+    initRepo,
     loading,
     error,
   };

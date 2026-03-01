@@ -3,6 +3,7 @@ import { MessageFeed } from './components/MessageFeed';
 import { TaskDashboard } from './components/TaskDashboard';
 import { useMulticlaude, useDaemonStatus } from './hooks/useMulticlaude';
 import { useDaemonCommands } from './hooks/useDaemonCommands';
+import { AddRepoModal } from './components/AddRepoModal';
 import { useState, useEffect } from 'react';
 
 /**
@@ -24,6 +25,7 @@ function App() {
   } = useDaemonCommands();
   const [currentRepo, setCurrentRepo] = useState<string | null>(null);
   const [showDangerZone, setShowDangerZone] = useState(false);
+  const [showAddRepo, setShowAddRepo] = useState(false);
 
   // Auto-select first repo when state loads
   useEffect(() => {
@@ -78,9 +80,20 @@ function App() {
         <h1 className="text-xl font-bold mb-6 shrink-0">Multiclaude</h1>
 
         <nav className="space-y-2 flex-1 overflow-y-auto min-h-0">
-          <h2 className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-            Repositories
-          </h2>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xs uppercase tracking-wider text-gray-400">
+              Repositories
+            </h2>
+            <button
+              onClick={() => setShowAddRepo(true)}
+              className="text-gray-400 hover:text-white transition-colors p-0.5 rounded hover:bg-gray-700"
+              title="Add repository"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
           {repos.length === 0 ? (
             <p className="text-gray-500 text-sm">No repositories tracked</p>
           ) : (
@@ -249,6 +262,12 @@ function App() {
           </div>
         )}
       </main>
+
+      <AddRepoModal
+        isOpen={showAddRepo}
+        onClose={() => setShowAddRepo(false)}
+        onAdded={() => { void refresh(); }}
+      />
     </div>
   );
 }
