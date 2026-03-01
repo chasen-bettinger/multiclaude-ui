@@ -74,10 +74,10 @@ function App() {
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-4 flex flex-col">
-        <h1 className="text-xl font-bold mb-6">Multiclaude</h1>
+      <aside className="w-64 bg-gray-900 text-white p-4 flex flex-col h-screen sticky top-0">
+        <h1 className="text-xl font-bold mb-6 shrink-0">Multiclaude</h1>
 
-        <nav className="space-y-2 flex-1">
+        <nav className="space-y-2 flex-1 overflow-y-auto min-h-0">
           <h2 className="text-xs uppercase tracking-wider text-gray-400 mb-2">
             Repositories
           </h2>
@@ -116,7 +116,7 @@ function App() {
         </nav>
 
         {/* Status Section */}
-        <div className="mt-8 border-t border-gray-700 pt-4">
+        <div className="mt-8 border-t border-gray-700 pt-4 shrink-0">
           <h2 className="text-xs uppercase tracking-wider text-gray-400 mb-2">
             Status
           </h2>
@@ -144,7 +144,7 @@ function App() {
         </div>
 
         {/* Controls Section */}
-        <div className="mt-4 border-t border-gray-700 pt-4">
+        <div className="mt-4 border-t border-gray-700 pt-4 shrink-0">
           <h2 className="text-xs uppercase tracking-wider text-gray-400 mb-2">
             Controls
           </h2>

@@ -100,6 +100,20 @@ function multiclaueApiPlugin(): Plugin {
   return {
     name: 'multiclaude-api',
     configureServer(server) {
+      // GET /api/daemon-status - Check if daemon is running via CLI
+      server.middlewares.use('/api/daemon-status', async (_req: IncomingMessage, res: ServerResponse) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+
+        try {
+          const { stdout } = await execAsync('multiclaude daemon status', { timeout: 5000 });
+          const running = !stdout.includes('Daemon is not running');
+          res.end(JSON.stringify({ running }));
+        } catch {
+          res.end(JSON.stringify({ running: false }));
+        }
+      });
+
       // GET /api/state - Read state.json
       server.middlewares.use('/api/state', (_req, res) => {
         res.setHeader('Content-Type', 'application/json');

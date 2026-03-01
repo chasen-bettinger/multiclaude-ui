@@ -15,10 +15,17 @@ const root = join(__dirname, '..');
 const MULTICLAUDE_DIR = join(homedir(), '.multiclaude');
 const STATE_PATH = join(MULTICLAUDE_DIR, 'state.json');
 
-// Check if multiclaude is set up
-if (!existsSync(STATE_PATH)) {
-  console.error('❌ multiclaude state.json not found at', STATE_PATH);
-  console.error('   Make sure multiclaude daemon is running: multiclaude start');
+// Check if multiclaude daemon is running
+try {
+  const { stdout } = await execAsync('multiclaude daemon status', { timeout: 5000 });
+  if (stdout.includes('Daemon is not running')) {
+    console.error('❌ multiclaude daemon is not running');
+    console.error('   Start the daemon first: multiclaude start');
+    process.exit(1);
+  }
+} catch {
+  console.error('❌ Could not check multiclaude daemon status');
+  console.error('   Make sure multiclaude is installed and daemon is running: multiclaude start');
   process.exit(1);
 }
 
@@ -85,6 +92,18 @@ const server = await createServer({
   plugins: [{
     name: 'multiclaude-api',
     configureServer(server) {
+      server.middlewares.use('/api/daemon-status', async (_req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        try {
+          const { stdout } = await execAsync('multiclaude daemon status', { timeout: 5000 });
+          const running = !stdout.includes('Daemon is not running');
+          res.end(JSON.stringify({ running }));
+        } catch {
+          res.end(JSON.stringify({ running: false }));
+        }
+      });
+
       server.middlewares.use('/api/state', (_req, res) => {
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Access-Control-Allow-Origin', '*');

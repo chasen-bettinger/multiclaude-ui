@@ -50,8 +50,8 @@ export function useMulticlaude() {
 /**
  * Hook for daemon connection status.
  *
- * Checks if the state API is accessible (which indicates daemon is running
- * and state.json exists).
+ * Checks if the daemon is running by calling `multiclaude daemon status`
+ * via the /api/daemon-status endpoint.
  */
 export function useDaemonStatus() {
   const [connected, setConnected] = useState(false);
@@ -60,8 +60,13 @@ export function useDaemonStatus() {
   const checkConnection = useCallback(async () => {
     setChecking(true);
     try {
-      const res = await fetch('/api/state');
-      setConnected(res.ok);
+      const res = await fetch('/api/daemon-status');
+      if (res.ok) {
+        const data = (await res.json()) as { running: boolean };
+        setConnected(data.running);
+      } else {
+        setConnected(false);
+      }
     } catch {
       setConnected(false);
     } finally {
